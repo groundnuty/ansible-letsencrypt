@@ -2,9 +2,9 @@
 - name: Install git
   apt: name=git update_cache=yes
 
-- name: Install FreeSwitch source code
+- name: Clone Certbot repo
   git: repo=https://github.com/certbot/certbot.git
-       dest=/opt/certbot
+       dest=/opt/letsencrypt
        version=master
        update=yes
        accept_hostkey=yes

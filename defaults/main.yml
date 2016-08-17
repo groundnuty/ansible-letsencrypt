@@ -1,4 +1,6 @@
 ---
+# defaults file for kurtabersold.letsencrypt
+
 letsencrypt:
   keysize: 4096
   email: "ssl-admin@{{ ansible_fqdn }}"

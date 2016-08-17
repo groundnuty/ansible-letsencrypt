@@ -1,0 +1,23 @@
+---
+- name: Install git
+  apt: name=git update_cache=yes
+
+- name: Install FreeSwitch source code
+  git: repo=https://github.com/certbot/certbot.git
+       dest=/opt/certbot
+       version=master
+       update=yes
+       accept_hostkey=yes
+
+- name: Create Letsencrypt Config Directory
+  file: path=/etc/letsencrypt owner=root group=root mode=0755 state=directory
+
+- name: Letsencrypt Config Template
+  template: src=templates/standalone-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
+
+- name: Run certbot-auto certonly (Standalone server on port 443)
+  shell: /opt/letsencrypt/certbot-auto --non-interactive certonly
+  args:
+    chdir: /opt/letsencrypt
+    creates: /etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem
+

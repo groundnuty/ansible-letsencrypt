@@ -1,0 +1,5 @@
+---
+letsencrypt:
+  keysize: 4096
+  email: "ssl-admin@{{ ansible_fqdn }}"
+  domains: "{{ ansible_fqdn }}"

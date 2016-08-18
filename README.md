@@ -1,6 +1,8 @@
 ansible-letsencrypt
 ===================
 
+[![Build Status](https://travis-ci.org/kurtabersold/ansible-letsencrypt.svg?branch=master)](https://travis-ci.org/kurtabersold/ansible-letsencrypt)
+
 A brief description of the role goes here.
 
 Requirements

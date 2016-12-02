@@ -1,0 +1,8 @@
+[Unit]
+Description=Runs a custom renewal script
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=/usr/local/bin/renew/
+ExecStart=/usr/local/bin/renew/renew.sh

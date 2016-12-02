@@ -22,6 +22,12 @@
     chdir: /opt/letsencrypt
     creates: /etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem
 
+- name: Generate Strong 2048 Bit Diffie-Hellman Group
+  shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+  args:
+    chdir: /opt/letsencrypt
+    creates: /etc/ssl/certs/dhparam.pem
+
 - name: Letsencrypt Webroot Config Template
   template: src=templates/webroot-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
 

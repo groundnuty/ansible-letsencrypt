@@ -1,2 +1,8 @@
 ---
 # handlers file for kurtabersold.letsencrypt
+
+- name: enable certbot
+  systemd:
+    name: certbot.timer
+    state: started
+    enabled: True

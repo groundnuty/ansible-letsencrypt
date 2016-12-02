@@ -32,10 +32,10 @@
   template: src=templates/webroot-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
 
 - name: Certificate Renewal Subscripts Directory
-  file: path=/usr/local/bin/renew/renew.d owner=root group=root mode=0755 state=directory
+  file: path=/usr/local/renew/renew.d owner=root group=root mode=0755 state=directory
 
 - name: Certificate Renewal Script
-  copy: src=files/renew.sh dest=/usr/local/bin/renew/renew.sh owner=root group=root mode=0774 force=yes
+  copy: src=files/renew.sh dest=/usr/local/renew/renew.sh owner=root group=root mode=0774 force=yes
 
 - name: Letsencrypt Standalone Config Template
   template: src=templates/standalone-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640

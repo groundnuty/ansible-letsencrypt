@@ -4,5 +4,5 @@ After=network.target
 
 [Service]
 Type=oneshot
-WorkingDirectory=/usr/local/bin/renew/
-ExecStart=/usr/local/bin/renew/renew.sh
+WorkingDirectory=/usr/local/renew/
+ExecStart=/usr/local/renew/renew.sh

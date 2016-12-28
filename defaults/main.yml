@@ -1,5 +1,19 @@
 ---
-# defaults file for kurtabersold.letsencrypt
+# defaults file for groundnuty.letsencrypt
+
+# role stages
+letsencrypt_install: false
+letsencrypt_uninstall: false
+letsencrypt_start: false
+
+# TODO name the variables in hash table consistent with variables above
+letsencryptargs: {
+  "install" : "{{ letsencrypt_install }}" ,
+  "uninstall" : "{{ letsencrypt_uninstall }}",
+  "start" : "{{ letsencrypt_start }}",
+}
+
+letsencrypt_ansible_manual_config_present: "{{ letsencryptargs.values()|sum()}}"
 
 letsencrypt:
   keysize: 4096

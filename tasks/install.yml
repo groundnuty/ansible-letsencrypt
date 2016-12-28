@@ -1,0 +1,38 @@
+---
+# tasks file for kurtabersold.letsencrypt
+- name: Install git
+  apt: name=git update_cache=yes
+
+- name: Clone Certbot repo
+  git: repo=https://github.com/certbot/certbot.git
+       dest=/opt/letsencrypt
+       version=master
+       update=yes
+       accept_hostkey=yes
+
+- name: Create Letsencrypt Config Directory
+  file: path=/etc/letsencrypt owner=root group=root mode=0755 state=directory
+
+- name: Letsencrypt Standalone Config Template
+  template: src=templates/standalone-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
+
+- name: Generate Strong 2048 Bit Diffie-Hellman Group
+  shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
+  args:
+    chdir: /opt/letsencrypt
+    creates: /etc/ssl/certs/dhparam.pem
+
+- name: Run certbot-auto certonly (Standalone server on port 443)
+  shell: /opt/letsencrypt/certbot-auto --non-interactive certonly
+  args:
+    chdir: /opt/letsencrypt
+    creates: /etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem
+
+# - name: Letsencrypt Webroot Config Template
+#   template: src=templates/webroot-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
+
+# - name: Certificate Renewal Subscripts Directory
+#   file: path=/usr/local/renew/renew.d owner=root group=root mode=0755 state=directory
+
+# - name: Certificate Renewal Script
+#   copy: src=files/renew.sh dest=/usr/local/renew/renew.sh owner=root group=root mode=0774 force=yes

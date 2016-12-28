@@ -1,0 +1,16 @@
+---
+# tasks file for groundnuty.letsencrypt
+
+# - name: Systemd unit files
+#   template:
+#     src: "{{ item.src }}"
+#     dest: /etc/systemd/system/{{ item.dest }}
+#     owner: root
+#     group: root
+#     mode: 0755
+#     force: yes
+#   with_items:
+#     - { src: 'templates/certbot.service', dest: 'certbot.service' }
+#     - { src: 'templates/certbot.timer', dest: 'certbot.timer' }
+#   notify:
+#     - enable certbot

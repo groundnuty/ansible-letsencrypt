@@ -1,55 +1,23 @@
 ---
-# tasks file for kurtabersold.letsencrypt
-- name: Install git
-  apt: name=git update_cache=yes
+# tasks file for letsencrypt
 
-- name: Clone Certbot repo
-  git: repo=https://github.com/certbot/certbot.git
-       dest=/opt/letsencrypt
-       version=master
-       update=yes
-       accept_hostkey=yes
+- include: tags_processing.yml
 
-- name: Create Letsencrypt Config Directory
-  file: path=/etc/letsencrypt owner=root group=root mode=0755 state=directory
+- include: install.yml 
+  tags: letsencrypt, letsencrypt:install
+  when: (letsencrypt_install.skipped is undefined) or
+        (letsencrypt_defaults.skipped is undefined)
 
-- name: Letsencrypt Standalone Config Template
-  template: src=templates/standalone-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
+- include: uninstall.yml
+  tags: letsencrypt:uninstall
+  when: letsencrypt_uninstall.skipped is undefined
 
-- name: Run certbot-auto certonly (Standalone server on port 443)
-  shell: /opt/letsencrypt/certbot-auto --non-interactive certonly
-  args:
-    chdir: /opt/letsencrypt
-    creates: /etc/letsencrypt/live/{{ ansible_fqdn }}/fullchain.pem
+# If you use the same role, many times in your playbook its important
+# to reset those values to their default
+- name: Reseting letsencrypt Arguments
+  set_fact:
+    letsencrypt_install: false
+    letsencrypt_uninstall: false
+    letsencrypt_start: false
+  tags: always
 
-- name: Generate Strong 2048 Bit Diffie-Hellman Group
-  shell: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048
-  args:
-    chdir: /opt/letsencrypt
-    creates: /etc/ssl/certs/dhparam.pem
-
-- name: Letsencrypt Webroot Config Template
-  template: src=templates/webroot-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
-
-- name: Certificate Renewal Subscripts Directory
-  file: path=/usr/local/renew/renew.d owner=root group=root mode=0755 state=directory
-
-- name: Certificate Renewal Script
-  copy: src=files/renew.sh dest=/usr/local/renew/renew.sh owner=root group=root mode=0774 force=yes
-
-- name: Letsencrypt Standalone Config Template
-  template: src=templates/standalone-cli.ini dest=/etc/letsencrypt/cli.ini force=yes owner=root group=root mode=0640
-
-- name: Systemd unit files
-  template:
-    src: "{{ item.src }}"
-    dest: /etc/systemd/system/{{ item.dest }}
-    owner: root
-    group: root
-    mode: 0755
-    force: yes
-  with_items:
-    - { src: 'templates/certbot.service', dest: 'certbot.service' }
-    - { src: 'templates/certbot.timer', dest: 'certbot.timer' }
-  notify:
-    - enable certbot

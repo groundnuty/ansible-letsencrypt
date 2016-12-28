@@ -1,0 +1,73 @@
+---
+# tags processing file for letsencrypt
+
+## Following debug messages are a hack, that allows for detection if
+## tags were supplied to Ansible and for running only specific (default)
+## tasks if no tags were supplied. The default behavior is equivalent with
+## supplying a tag 'letsencrypt'
+# letsencrypt
+
+- name: Processing Ansible letsencrypt Arguments
+  debug: msg="Arguments passed {{ letsencrypt_ansible_manual_config_present }}"
+
+- name: Processing Ansible letsencrypt Tags
+  debug: msg="Processing Ansible letsencrypt Tags"
+  register: tags_not_present
+
+# letsencrypt
+- name: Processing Ansible letsencrypt Tag
+  debug: msg="Processing Ansible letsencrypt Default Tags"
+  tags: letsencrypt
+  register: letsencrypt_defaults
+  when: tags_not_present is undefined
+
+# letsencrypt
+- name: Processing Ansible letsencrypt Default Args
+  debug: msg="Processing Ansible letsencrypt Default Tags"
+  register: letsencrypt_defaults
+  when: (tags_not_present is defined) and
+        (letsencrypt_ansible_manual_config_present|int == false)
+
+# Install letsencrypt
+- name: Processing Ansible letsencrypt:install Tag
+  debug: msg="Processing Ansible letsencrypt Install Tags"
+  tags: letsencrypt:install
+  register: letsencrypt_install
+  when: tags_not_present is undefined
+
+# Uninstall letsencrypt
+- name: Processing Ansible letsencrypt:uninstall Tag
+  debug: msg="Processing Ansible letsencrypt Uninstall Tags"
+  tags: letsencrypt:uninstall
+  register: letsencrypt_uninstall
+  when: tags_not_present is undefined
+
+# Start letsencrypt
+- name: Processing Ansible letsencrypt letsencrypt Tag
+  debug: msg="Processing Ansible letsencrypt Start Tag"
+  tags: letsencrypt:start
+  register: letsencrypt_start
+  when: tags_not_present is undefined
+
+- name: Processing Ansible letsencrypt Install Vars
+  set_fact:
+    letsencrypt_install: true
+  tags: letsencrypt, letsencrypt:install
+  when: (letsencrypt_install.skipped is undefined) or
+        (letsencrypt_defaults.skipped is undefined)
+
+- name: Processing Ansible letsencrypt Uninstall Vars
+  set_fact:
+    letsencrypt_uninstall: true
+  tags: letsencrypt:uninstall
+  when: letsencrypt_uninstall.skipped is undefined
+
+- block:
+  - name: Processing Ansible letsencrypt Start Vars
+    set_fact:
+      letsencrypt_start: true
+    changed_when: True
+    notify: "letsencrypt Start"
+  - meta: flush_handlers
+  tags: letsencrypt:start
+  when: letsencrypt_start.skipped is undefined

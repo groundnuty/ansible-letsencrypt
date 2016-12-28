@@ -1,0 +1,12 @@
+---
+
+- name: Delete config files
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items:
+    - /opt/letsencrypt
+    - /etc/letsencrypt
+    - /usr/local/renew/renew.d
+    - /etc/systemd/system/certbot.service
+    - /etc/systemd/system/certbot.timer
